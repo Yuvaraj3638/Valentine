@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Will You Be My Valentine ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- EMOJI BACKGROUND -->
+<div id="emoji-layer"></div>
+
+<!-- AUDIO -->
+<audio id="audio-sad" src="assets/audio/sad.mp3" loop></audio>
+<audio id="audio-happy" src="assets/audio/romantic.mp3" loop></audio>
+
+<!-- QUESTION SCREEN -->
+<section id="screen-question" class="screen active">
+    <h1>Will you be my Valentine? ❤️</h1>
+
+    <div class="button-row">
+        <button id="btn-yes">YES</button>
+        <button id="btn-no">NO</button>
+    </div>
+
+    <div id="beg-container">
+        <img id="beg-sticker">
+        <p id="beg-text"></p>
+    </div>
+</section>
+
+<!-- ENVELOPES SCREEN -->
+<section id="screen-envelopes" class="screen">
+    <div class="envelope-row">
+        <img class="envelope"
+             data-type="flowers"
+             data-closed="assets/gifs/Envelopes/envelope-closed-flowers.webp"
+             data-open="assets/gifs/Envelopes/envelope-opening-flowers.gif"
+             src="assets/gifs/Envelopes/envelope-closed-flowers.webp">
+
+        <img class="envelope"
+             data-type="memories"
+             data-closed="assets/gifs/Envelopes/envelope-closed-memories.gif"
+             data-open="assets/gifs/Envelopes/envelope-opening-memories.gif"
+             src="assets/gifs/Envelopes/envelope-closed-memories.gif">
+
+        <img class="envelope"
+             data-type="letter"
+             data-closed="assets/gifs/Envelopes/envelope-closed-letter.png"
+             data-open="assets/gifs/Envelopes/envelope-opening-letter.png"
+             src="assets/gifs/Envelopes/envelope-closed-letter.png">
+    </div>
+</section>
+
+<!-- CONTENT SCREEN -->
+<section id="screen-content" class="screen">
+    <button id="btn-back">← Back</button>
+    <div id="content-area"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
