@@ -24,7 +24,7 @@ let yesPaddingY = 16;
 let yesFontSize = 1.2;
 
 let emojiInterval = null;
-let dateIdeaSelected = false;
+let flowerInterval = null;
 
 /* ---------------- BEGGING STAGES ---------------- */
 const beggingStages = [
@@ -50,36 +50,64 @@ const dateIdeas = [
     },
     {
         title: "Watching a movie cuddled up 🎬",
-        message: "Heyy lovee… movie night, cuddles, and falling asleep together 🥰",
+        message: "Movie night, cuddles, and falling asleep together 🥰",
         sticker: "assets/gifs/dateGifs/watching-movie.webp"
     },
     {
         title: "Long Drive 🏍️",
-        message: "Ayeee… long drive, wind in our faces, just us 🖤",
+        message: "Long drive, wind, music, just us 🖤",
         sticker: "assets/gifs/dateGifs/long-drive.webp"
     },
+
     {
-        title: "Stay Home and chill up 🏠",
-        message: "Staying home, chilling, being annoying together 😘",
+        title: "Stay Home & Chill 🛖😎",
+        message: "Do You think I will leave you to stay home and chill, Nope You will come out with me. If You decide to stay home, I will Come Home and Kill You 😘👻",
         sticker: "assets/gifs/dateGifs/kill.webp"
     }
 ];
 
 /* ---------------- EMOJI RAIN ---------------- */
-function startEmojiRain(emojis) {
+function startEmojiRain(emojis, density = 120) {
     stopEmojiRain();
     emojiInterval = setInterval(() => {
         const e = document.createElement("span");
         e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         e.style.left = Math.random() * 100 + "vw";
-        e.style.animationDuration = 4 + Math.random() * 4 + "s";
+        e.style.animationDuration = 5 + Math.random() * 4 + "s";
         emojiLayer.appendChild(e);
         setTimeout(() => e.remove(), 9000);
-    }, 120);
+    }, density);
 }
 
 function stopEmojiRain() {
     if (emojiInterval) clearInterval(emojiInterval);
+}
+
+/* ---------------- FLOWER SHOWER ---------------- */
+function startFlowerShower() {
+    stopFlowerShower();
+    const flowers = ["1.gif","2.webp","3.webp","4.webp","5.webp"];
+
+    flowerInterval = setInterval(() => {
+        const flower = document.createElement("img");
+        flower.src = `assets/images/flowers/${flowers[Math.floor(Math.random() * flowers.length)]}`;
+        flower.style.position = "fixed";
+        flower.style.left = Math.random() * 100 + "vw";
+        flower.style.top = "-60px";
+        flower.style.width = "70px";
+        document.body.appendChild(flower);
+
+        flower.animate(
+            [{ transform: "translateY(0)" }, { transform: "translateY(120vh)" }],
+            { duration: 6500, easing: "linear" }
+        );
+
+        setTimeout(() => flower.remove(), 6500);
+    }, 260);
+}
+
+function stopFlowerShower() {
+    if (flowerInterval) clearInterval(flowerInterval);
 }
 
 /* ---------------- NO CLICK ---------------- */
@@ -87,7 +115,6 @@ noBtn.addEventListener("click", () => {
     if (noCount >= MAX_NO_CLICKS) return;
 
     noCount++;
-
     happyAudio.pause();
     sadAudio.play();
 
@@ -103,11 +130,9 @@ noBtn.addEventListener("click", () => {
     begSticker.style.display = "block";
     begText.textContent = stage.text;
 
-    startEmojiRain(["💔","😢","😭","🥀","😞","🖤"]);
+    startEmojiRain(["💔","😢","😭","🥀","😞","🖤"], 120);
 
-    if (noCount === MAX_NO_CLICKS) {
-        noBtn.style.display = "none";
-    }
+    if (noCount === MAX_NO_CLICKS) noBtn.style.display = "none";
 });
 
 /* ---------------- YES CLICK ---------------- */
@@ -116,7 +141,7 @@ yesBtn.addEventListener("click", () => {
     happyAudio.play();
 
     stopEmojiRain();
-    startEmojiRain(["❤️","💕","💖","😘","🤍","😊","🤗"]);
+    startEmojiRain(["❤️","💕","💖","😘","🤍","😊","🤗"], 90);
 
     screenQuestion.classList.remove("active");
     screenEnvelopes.classList.add("active");
@@ -136,12 +161,14 @@ document.querySelectorAll(".envelope").forEach(env => {
     });
 });
 
-/* ---------------- MAIN BACK (TO ENVELOPES) ---------------- */
+/* ---------------- MAIN BACK ---------------- */
 backBtn.addEventListener("click", () => {
     screenContent.classList.remove("active");
     screenEnvelopes.classList.add("active");
     contentArea.innerHTML = "";
-    dateIdeaSelected = false;
+
+    stopFlowerShower();
+    stopEmojiRain();
 
     document.querySelectorAll(".envelope").forEach(env => {
         env.src = env.dataset.closed;
@@ -151,15 +178,17 @@ backBtn.addEventListener("click", () => {
 /* ---------------- CONTENT LOADER ---------------- */
 function loadContent(type) {
 
-    /* -------- FLOWERS + DATE IDEAS -------- */
+    stopFlowerShower();
+    stopEmojiRain();
+
+    /* FLOWERS */
     if (type === "flowers") {
-        dateIdeaSelected = false;
+        startFlowerShower();
+        startEmojiRain(["🌸","💐","🌷"], 140);
 
         contentArea.innerHTML = `
-      <h2 style="margin-bottom:20px;">🌸 Our Date Ideas 🌸</h2>
-
+      <h2>🌸 Our Date Ideas 🌸</h2>
       <div class="date-ideas"></div>
-
       <div class="date-popup" id="date-popup">
         <button id="btn-back-dates">← Back to date ideas</button>
         <img id="date-sticker">
@@ -169,80 +198,52 @@ function loadContent(type) {
 
         const ideasContainer = document.querySelector(".date-ideas");
         const popup = document.getElementById("date-popup");
-        const popupText = document.getElementById("date-text");
         const popupSticker = document.getElementById("date-sticker");
+        const popupText = document.getElementById("date-text");
         const backToDatesBtn = document.getElementById("btn-back-dates");
 
-        dateIdeas.forEach((idea) => {
+        dateIdeas.forEach(idea => {
             const card = document.createElement("div");
             card.className = "date-card";
             card.textContent = idea.title;
 
-            card.addEventListener("click", () => {
-                dateIdeaSelected = true;
+            card.onclick = () => {
                 ideasContainer.style.display = "none";
-
                 popupSticker.src = idea.sticker;
                 popupText.textContent = idea.message;
                 popup.classList.add("show");
-            });
+            };
 
             ideasContainer.appendChild(card);
         });
 
-        backToDatesBtn.addEventListener("click", () => {
-            dateIdeaSelected = false;
+        backToDatesBtn.onclick = () => {
             popup.classList.remove("show");
             ideasContainer.style.display = "grid";
-        });
-
-        /* Flower shower */
-        const flowers = ["1.gif","2.webp","3.webp","4.webp","5.webp"];
-        setInterval(() => {
-            const flower = document.createElement("img");
-            flower.src = `assets/images/flowers/${flowers[
-                Math.floor(Math.random() * flowers.length)
-                ]}`;
-            flower.style.position = "fixed";
-            flower.style.left = Math.random() * 100 + "vw";
-            flower.style.top = "-60px";
-            flower.style.width = "70px";
-            document.body.appendChild(flower);
-
-            flower.animate(
-                [{ transform: "translateY(0)" }, { transform: "translateY(120vh)" }],
-                { duration: 6500, easing: "linear" }
-            );
-
-            setTimeout(() => flower.remove(), 6500);
-        }, 260);
+        };
     }
 
-    /* -------- MEMORIES -------- */
+    /* MEMORIES */
     if (type === "memories") {
-        const TOTAL_MEMORIES = 11;
-        let html = `<div class="gallery masonry">`;
+        startEmojiRain(["❤️","📸","✨"], 180);
 
-        for (let i = 1; i <= TOTAL_MEMORIES; i++) {
+        let html = `<div class="gallery masonry">`;
+        for (let i = 1; i <= 11; i++) {
             html += `
-        <d${i}v class="gallery-item">
-          <img src="../assets/images/memories/i.jpeg">
+        <div class="gallery-item">
+          <img src="assets/images/memories/${i}.jpeg">
           <p>One of my favorite memories ❤️</p>
         </div>`;
         }
-
         html += `</div>`;
-        contentArea.innerHTML = html;
 
-        document.querySelectorAll(".gallery-item").forEach(item => {
-            item.addEventListener("click", () => {
-                item.classList.toggle("active");
-            });
-        });
+        contentArea.innerHTML = html;
     }
 
-    /* -------- LETTER -------- */
+    /* LETTER */
     if (type === "letter") {
+        startEmojiRain(["🤍","💌"], 300);
+
         contentArea.innerHTML = `
       <img src="assets/images/Letter/Letter.jpg" class="letter-img">
       <p>Every word comes straight from my heart 💌</p>
